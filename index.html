@@ -17,6 +17,11 @@
     <header class="header">
         <div class="clock" id="clock">00:00:00</div>
         <div class="greeting" id="greeting">გაუშვი დღე <span>...</span></div>
+        <div class="theme-switcher">
+            <button class="theme-btn" onclick="setTheme('dark')" title="მუქი">🌙</button>
+            <button class="theme-btn" onclick="setTheme('light')" title="ღია">☀️</button>
+            <button class="theme-btn" onclick="setTheme('system')" title="სისტემა">💻</button>
+        </div>
     </header>
 
     
@@ -65,7 +70,7 @@
             <h2 class="widget-title">🔗 სწრაფი ბმულები</h2>
             <div class="links-grid" id="linksGrid"></div>
             <div class="add-link-form">
-                <input type="text" class="todo-input" id="linkName" placeholder="სახელი" maxlength="15">
+                <input type="text" class="todo-input" id="linkName" placeholder="სახელი" maxlength="30">
                 <input type="url" class="todo-input" id="linkUrl" placeholder="https://...">
                 <button class="btn btn-primary">+</button>
             </div>
@@ -94,95 +99,61 @@
         
         <section class="glass-card">
             <h2 class="widget-title">⏱️ ტაიმერი</h2>
-            
-            <!-- Timer Mode Tabs -->
             <div class="timer-modes" style="margin-bottom: 1rem;">
-                <button class="mode-btn active" data-timer-mode="pomodoro" onclick="switchTimerMode('pomodoro')">
-                    🍅 Pomodoro
+                <button class="mode-btn active" onclick="setPomodoroMode('pomodoro')">
+                    🍅 Pomodoro (25წთ)
                 </button>
-                <button class="mode-btn" data-timer-mode="countdown" onclick="switchTimerMode('countdown')">
-                    ⏳ Countdown
+                <button class="mode-btn" onclick="setPomodoroMode('break')">
+                    ☕ Break (5წთ)
+                </button>
+                <button class="mode-btn" onclick="setPomodoroMode('deepwork')">
+                    🎯 Deep Work (50წთ)
                 </button>
             </div>
-
-            <!-- Pomodoro Section -->
-            <div id="pomodoroSection">
-                <div class="timer-modes" style="margin-bottom: 1rem;">
-                    <button class="mode-btn active" onclick="setPomodoroMode('pomodoro')">
-                        🍅 Pomodoro (25წთ)
-                    </button>
-                    <button class="mode-btn" onclick="setPomodoroMode('break')">
-                        ☕ Break (5წთ)
-                    </button>
-                    <button class="mode-btn" onclick="setPomodoroMode('deepwork')">
-                        🎯 Deep Work (50წთ)
-                    </button>
-                </div>
-                <div class="timer-wrapper">
-                    <div class="timer-ring-container" id="timerRingContainer">
-                        <svg class="timer-ring" viewBox="0 0 220 220">
-                            <circle class="timer-ring-bg" cx="110" cy="110" r="100"/>
-                            <circle class="timer-ring-progress" id="timerRingProgress" cx="110" cy="110" r="100"/>
-                        </svg>
-                        <div class="timer-display" id="timer">25:00</div>
-                    </div>
-                </div>
-                <div class="timer-controls">
-                    <button class="btn btn-primary" id="startBtn" onclick="togglePomodoro()">
-                        ▶️ დაწყება
-                    </button>
-                    <button class="btn" onclick="resetPomodoro()">
-                        ↺ გადატვირთვა
-                    </button>
+            <div class="timer-wrapper">
+                <div class="timer-ring-container" id="timerRingContainer">
+                    <svg class="timer-ring" viewBox="0 0 220 220">
+                        <circle class="timer-ring-bg" cx="110" cy="110" r="100"/>
+                        <circle class="timer-ring-progress" id="timerRingProgress" cx="110" cy="110" r="100"/>
+                    </svg>
+                    <div class="timer-display" id="timer">25:00</div>
                 </div>
             </div>
-
-            <!-- Countdown Section -->
-            <div id="countdownSection" style="display: none;">
-                <div class="countdown-inputs">
-                    <div class="countdown-input-group">
-                        <input type="number" id="countdownHours" min="0" max="99" value="0" placeholder="სთ">
-                        <label>სთამდე</label>
-                    </div>
-                    <div class="countdown-input-group">
-                        <input type="number" id="countdownMinutes" min="0" max="59" value="0" placeholder="წთ">
-                        <label>წუთამდე</label>
-                    </div>
-                    <div class="countdown-input-group">
-                        <input type="number" id="countdownSeconds" min="0" max="59" value="0" placeholder="წმ">
-                        <label>წამამდე</label>
-                    </div>
-                    <button class="btn btn-primary" onclick="startCountdown()">
-                        ▶️ დაწყება
-                    </button>
-                </div>
-                <div class="timer-wrapper" style="margin-top: 1.5rem;">
-                    <div class="timer-ring-container" id="countdownRingContainer">
-                        <svg class="timer-ring" viewBox="0 0 220 220">
-                            <circle class="timer-ring-bg" cx="110" cy="110" r="100"/>
-                            <circle class="timer-ring-progress" id="countdownRingProgress" cx="110" cy="110" r="100"/>
-                        </svg>
-                        <div class="timer-display" id="countdownDisplay">00:00:00</div>
-                    </div>
-                </div>
-                <div class="timer-controls">
-                    <button class="btn btn-primary" id="countdownStartBtn" onclick="toggleCountdown()">
-                        ▶️ დაწყება
-                    </button>
-                    <button class="btn" onclick="resetCountdown()">
-                        ↺ გადატვირთვა
-                    </button>
-                    <button class="btn" onclick="clearAllCountdowns()" style="background: rgba(225, 112, 85, 0.2); color: var(--danger);">
-                        🗑️ გასუფთავება
-                    </button>
-                </div>
-                
-                <!-- Active Countdowns List -->
-                <div class="countdowns-list" id="countdownsList"></div>
+            <div class="timer-controls">
+                <button class="btn btn-primary" id="startBtn" onclick="togglePomodoro()">
+                    ▶️ დაწყება
+                </button>
+                <button class="btn" onclick="resetPomodoro()">
+                    ↺ გადატვირთვა
+                </button>
             </div>
+        </section>
+
+        <!-- Countdown Timer - Separate Widget -->
+        <section class="glass-card">
+            <h2 class="widget-title">⏳ Countdown</h2>
+            <div class="countdown-inputs">
+                <div class="countdown-input-group">
+                    <input type="number" id="countdownHours" min="0" max="99" value="0" placeholder="სთ">
+                    <label>სთ</label>
+                </div>
+                <div class="countdown-input-group">
+                    <input type="number" id="countdownMinutes" min="0" max="59" value="0" placeholder="წთ">
+                    <label>წთ</label>
+                </div>
+                <div class="countdown-input-group">
+                    <input type="number" id="countdownSeconds" min="0" max="59" value="0" placeholder="წმ">
+                    <label>წმ</label>
+                </div>
+                <button class="btn btn-primary" onclick="startCountdown()">
+                    ▶️ დაწყება
+                </button>
+            </div>
+            <div class="countdowns-list" id="countdownsList"></div>
         </section>
     </main>
 
     <script src="script.js"></script>
 </body>
 </html>
+<!-- redeploy trigger -->

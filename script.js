@@ -268,7 +268,7 @@ function resetPomodoro() {
 }
 
 function setPomodoroMode(mode) {
-    const btns = document.querySelectorAll('#pomodoroSection .mode-btn');
+    const btns = document.querySelectorAll('.glass-card .timer-modes .mode-btn');
     btns.forEach(btn => btn.classList.remove('active'));
     const modeNames = { pomodoro: 0, break: 1, deepwork: 2 };
     btns[modeNames[mode]]?.classList.add('active');
@@ -542,7 +542,7 @@ function renderCountdowns() {
 }
 
 // Expose functions to global scope for onclick handlers
-window.switchTimerMode = switchTimerMode;
+window.setTheme = setTheme;
 window.setPomodoroMode = setPomodoroMode;
 window.togglePomodoro = togglePomodoro;
 window.resetPomodoro = resetPomodoro;
@@ -663,9 +663,18 @@ async function fetchCryptoPrices() {
     
     const ids = Object.values(cryptoConfig).map(c => c.id).join(',');
     
+    // Show loading state
+    cryptoList.innerHTML = `
+        <div class="crypto-loading">
+            <div class="loading-spinner"></div>
+            <span>მონაცემების ჩატვირთვა...</span>
+        </div>
+    `;
+    
     try {
+        // Use CORS proxy for CoinGecko
         const response = await fetch(
-            `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`
+            `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`)}`
         );
         
         if (!response.ok) {
@@ -677,6 +686,19 @@ async function fetchCryptoPrices() {
         updateCryptoLastUpdate();
         
     } catch (error) {
+        // Try direct call if proxy fails
+        try {
+            const directResponse = await fetch(
+                `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`
+            );
+            if (directResponse.ok) {
+                const data = await directResponse.json();
+                renderCryptoList(data);
+                updateCryptoLastUpdate();
+                return;
+            }
+        } catch (e) {}
+        
         cryptoList.innerHTML = `
             <div class="crypto-error">
                 <span>❌ მონაცემები ვერ მოიძებნა</span>
@@ -766,16 +788,32 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
+// ===== Theme Functions =====
+function setTheme(theme) {
+    if (theme === 'system') {
+        document.documentElement.removeAttribute('data-theme');
+    } else {
+        document.documentElement.setAttribute('data-theme', theme);
+    }
+    localStorage.setItem('theme', theme);
+}
+
+function loadTheme() {
+    const saved = localStorage.getItem('theme');
+    if (saved) {
+        setTheme(saved);
+    }
+}
+
 // ===== Initialize =====
 function init() {
     renderTodos();
     renderLinks();
     updateTimerDisplay();
-    updateTimerMode();
+    loadTheme();
     loadNotes();
     fetchCryptoPrices();
     startCryptoRefresh();
-    switchTimerMode('pomodoro');
     
     if ('Notification' in window && Notification.permission === 'default') {
         Notification.requestPermission();
