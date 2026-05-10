@@ -387,6 +387,10 @@ const CRYPTO_IDS = {
 };
 
 const cryptoConfig = {
+    btc: { id: 'bitcoin', symbol: 'BTC', name: 'Bitcoin', gradient: 'linear-gradient(135deg, #f7931a 0%, #ffb74d 100%)' },
+    eth: { id: 'ethereum', symbol: 'ETH', name: 'Ethereum', gradient: 'linear-gradient(135deg, #627eea 0%, #90a4ff 100%)' },
+    sol: { id: 'solana', symbol: 'SOL', name: 'Solana', gradient: 'linear-gradient(135deg, #9945ff 0%, #14f195 100%)' },
+    ada: { id: 'cardano', symbol: 'ADA', name: 'Cardano', gradient: 'linear-gradient(135deg, #0033ad 0%, #1a73e8 100%)' },
     sui: { id: 'sui', symbol: 'SUI', name: 'Sui', gradient: 'linear-gradient(135deg, #4da2ff 0%, #7b61ff 100%)' },
     atom: { id: 'cosmos', symbol: 'ATOM', name: 'Cosmos', gradient: 'linear-gradient(135deg, #2e3148 0%, #6f7590 100%)' },
     vvv: { id: 'venice-token', symbol: 'VVV', name: 'VIVI', gradient: 'linear-gradient(135deg, #ff6b6b 0%, #feca57 100%)' },
