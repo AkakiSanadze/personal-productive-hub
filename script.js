@@ -13,16 +13,6 @@ const linkUrl = document.getElementById('linkUrl');
 const linksGrid = document.getElementById('linksGrid');
 const addLinkBtn = document.querySelector('.add-link-form .btn-primary');
 
-// Weather - removed (not in HTML)
-
-// Timer
-const timerDisplay = document.getElementById('timer');
-const startBtn = document.getElementById('startBtn');
-const resetBtn = document.querySelector('.timer-controls .btn:last-child');
-const modeBtns = document.querySelectorAll('.mode-btn');
-const timerRingContainer = document.getElementById('timerRingContainer');
-const timerRingProgress = document.getElementById('timerRingProgress');
-
 // Notes
 const notesTextarea = document.getElementById('notesTextarea');
 const charCount = document.getElementById('charCount');
@@ -38,10 +28,22 @@ const refreshCryptoBtn = document.getElementById('refreshCryptoBtn');
 // ===== State =====
 let todos = JSON.parse(localStorage.getItem('todos')) || [];
 let links = JSON.parse(localStorage.getItem('links')) || [];
+
+// Pomodoro Timer
 let timerInterval = null;
 let timerSeconds = 25 * 60;
 let currentMode = 'pomodoro';
 let isRunning = false;
+
+// Countdown Timers
+let countdowns = [];
+let countdownIntervals = {};
+let audioContext = null;
+let activeAlarmInterval = null;
+let ringingCountdowns = new Set();
+
+// Timer ring circumference
+const CIRCUMFERENCE = 2 * Math.PI * 100;
 
 // Timer modes
 const modes = {
@@ -49,9 +51,6 @@ const modes = {
     break: 5 * 60,
     deepwork: 50 * 60
 };
-
-// Timer ring circumference
-const CIRCUMFERENCE = 2 * Math.PI * 100; // r=100
 
 // ===== Clock =====
 function updateClock() {
@@ -110,7 +109,6 @@ function toggleTodo(index) {
 }
 
 function deleteTodo(index) {
-    // Add slide-out animation before removing
     const items = todoList.querySelectorAll('.todo-item');
     const item = items[index];
     if (item) {
@@ -123,7 +121,6 @@ function deleteTodo(index) {
     }
 }
 
-// Event listeners for todo
 addTodoBtn.addEventListener('click', addTodo);
 todoInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') addTodo();
@@ -180,7 +177,6 @@ function addLink() {
     
     if (!name || !url) return;
     
-    // Validate and prepend protocol
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
         url = 'https://' + url;
     }
@@ -192,7 +188,6 @@ function addLink() {
     linkUrl.value = '';
 }
 
-// Event listeners for links
 addLinkBtn.addEventListener('click', addLink);
 linkUrl.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') addLink();
@@ -206,7 +201,9 @@ linksGrid.addEventListener('click', (e) => {
     }
 });
 
-// ===== Timer Functions =====
+renderLinks();
+
+// ===== Pomodoro Timer Functions =====
 function formatTime(seconds) {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -227,10 +224,7 @@ function updateTimerRing() {
 }
 
 function updateTimerMode() {
-    // Remove all mode classes
     timerRingContainer.classList.remove('break', 'deepwork');
-    
-    // Add appropriate class
     if (currentMode === 'break') {
         timerRingContainer.classList.add('break');
     } else if (currentMode === 'deepwork') {
@@ -238,14 +232,12 @@ function updateTimerMode() {
     }
 }
 
-function startTimer() {
+function togglePomodoro() {
     if (isRunning) {
-        // Pause
         clearInterval(timerInterval);
         isRunning = false;
         startBtn.textContent = '▶️ დაწყება';
     } else {
-        // Start
         isRunning = true;
         startBtn.textContent = '⏸️ შეჩერება';
         timerInterval = setInterval(() => {
@@ -256,11 +248,10 @@ function startTimer() {
                 clearInterval(timerInterval);
                 isRunning = false;
                 startBtn.textContent = '▶️ დაწყება';
-                // Notification
                 if (Notification.permission === 'granted') {
-                    new Notification('⏰ ტაიმერი დასრულდა!');
+                    new Notification('⏰ პომოდოროს ტაიმერი დასრულდა!');
                 }
-                // Reset to current mode duration
+                playAlarmSound();
                 timerSeconds = modes[currentMode];
                 updateTimerDisplay();
             }
@@ -268,7 +259,7 @@ function startTimer() {
     }
 }
 
-function resetTimer() {
+function resetPomodoro() {
     clearInterval(timerInterval);
     isRunning = false;
     startBtn.textContent = '▶️ დაწყება';
@@ -276,23 +267,291 @@ function resetTimer() {
     updateTimerDisplay();
 }
 
-function selectMode(mode) {
-    modeBtns.forEach(btn => btn.classList.remove('active'));
+function setPomodoroMode(mode) {
+    const btns = document.querySelectorAll('#pomodoroSection .mode-btn');
+    btns.forEach(btn => btn.classList.remove('active'));
     const modeNames = { pomodoro: 0, break: 1, deepwork: 2 };
-    modeBtns[modeNames[mode]].classList.add('active');
+    btns[modeNames[mode]]?.classList.add('active');
     currentMode = mode;
     updateTimerMode();
-    resetTimer();
+    resetPomodoro();
 }
 
-// Event listeners for timer
-startBtn.addEventListener('click', startTimer);
-resetBtn.addEventListener('click', resetTimer);
+startBtn.addEventListener('click', togglePomodoro);
+resetBtn.addEventListener('click', resetPomodoro);
 modeBtns.forEach(btn => {
     const modeMap = { 0: 'pomodoro', 1: 'break', 2: 'deepwork' };
     const idx = Array.from(modeBtns).indexOf(btn);
     btn.addEventListener('click', () => selectMode(modeMap[idx]));
 });
+// Use the new setPomodoroMode for the inner buttons
+document.querySelectorAll('#pomodoroSection .mode-btn').forEach(btn => {
+    // Already handled in setPomodoroMode onclick
+});
+
+function selectMode(mode) {
+    modeBtns.forEach(btn => btn.classList.remove('active'));
+    const modeNames = { pomodoro: 0, break: 1, deepwork: 2 };
+    modeBtns[modeNames[mode]]?.classList.add('active');
+    currentMode = mode;
+    updateTimerMode();
+    resetPomodoro();
+}
+
+// Initialize pomodoro
+updateTimerDisplay();
+updateTimerMode();
+
+// ===== Countdown Timer Functions =====
+function switchTimerMode(mode) {
+    const pomodoroSection = document.getElementById('pomodoroSection');
+    const countdownSection = document.getElementById('countdownSection');
+    const tabs = document.querySelectorAll('.widget-title + .timer-modes .mode-btn');
+    
+    tabs.forEach(tab => {
+        if (tab.dataset.timerMode === mode) {
+            tab.classList.add('active');
+        } else {
+            tab.classList.remove('active');
+        }
+    });
+    
+    if (mode === 'pomodoro') {
+        pomodoroSection.style.display = 'block';
+        countdownSection.style.display = 'none';
+    } else {
+        pomodoroSection.style.display = 'none';
+        countdownSection.style.display = 'block';
+    }
+}
+
+function startCountdown() {
+    const hours = parseInt(document.getElementById('countdownHours').value) || 0;
+    const minutes = parseInt(document.getElementById('countdownMinutes').value) || 0;
+    const seconds = parseInt(document.getElementById('countdownSeconds').value) || 0;
+    
+    const totalSeconds = hours * 3600 + minutes * 60 + seconds;
+    if (totalSeconds <= 0) return;
+    
+    const id = Date.now();
+    const label = `⏱️ ტაიმერი ${countdowns.length + 1}`;
+    
+    countdowns.push({
+        id,
+        label,
+        totalSeconds,
+        remaining: totalSeconds,
+        isRunning: true
+    });
+    
+    document.getElementById('countdownHours').value = '';
+    document.getElementById('countdownMinutes').value = '';
+    document.getElementById('countdownSeconds').value = '';
+    
+    renderCountdowns();
+    startCountdownInterval(id);
+}
+
+function startCountdownInterval(id) {
+    const cd = countdowns.find(c => c.id === id);
+    if (!cd) return;
+    
+    countdownIntervals[id] = setInterval(() => {
+        const countdown = countdowns.find(c => c.id === id);
+        if (!countdown || !countdown.isRunning) return;
+        
+        countdown.remaining--;
+        updateCountdownDisplay(id);
+        
+        if (countdown.remaining <= 0) {
+            clearInterval(countdownIntervals[id]);
+            countdown.isRunning = false;
+            countdown.remaining = 0;
+            triggerAlarm(id);
+        }
+    }, 1000);
+}
+
+function updateCountdownDisplay(id) {
+    const el = document.querySelector(`[data-countdown-id="${id}"] .countdown-item-time`);
+    const cd = countdowns.find(c => c.id === id);
+    if (el && cd) {
+        const h = Math.floor(cd.remaining / 3600);
+        const m = Math.floor((cd.remaining % 3600) / 60);
+        const s = cd.remaining % 60;
+        el.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        
+        // Update ring
+        const progress = cd.remaining / cd.totalSeconds;
+        const ring = document.querySelector(`[data-countdown-id="${id}"] .countdown-ring-progress`);
+        if (ring) {
+            ring.style.strokeDashoffset = CIRCUMFERENCE * (1 - progress);
+        }
+    }
+}
+
+function toggleCountdown(id) {
+    const cd = countdowns.find(c => c.id === id);
+    if (!cd) return;
+    
+    cd.isRunning = !cd.isRunning;
+    
+    if (cd.isRunning) {
+        startCountdownInterval(id);
+    } else {
+        clearInterval(countdownIntervals[id]);
+    }
+    
+    renderCountdowns();
+}
+
+function resetCountdownItem(id) {
+    clearInterval(countdownIntervals[id]);
+    const cd = countdowns.find(c => c.id === id);
+    if (cd) {
+        cd.remaining = cd.totalSeconds;
+        cd.isRunning = false;
+        stopAlarm(id);
+        renderCountdowns();
+    }
+}
+
+function deleteCountdown(id) {
+    clearInterval(countdownIntervals[id]);
+    stopAlarm(id);
+    countdowns = countdowns.filter(c => c.id !== id);
+    renderCountdowns();
+}
+
+function clearAllCountdowns() {
+    countdowns.forEach(cd => {
+        clearInterval(countdownIntervals[cd.id]);
+        stopAlarm(cd.id);
+    });
+    countdowns = [];
+    renderCountdowns();
+}
+
+function triggerAlarm(id) {
+    ringingCountdowns.add(id);
+    renderCountdowns();
+    playAlarmSoundLoop();
+}
+
+function stopAlarm(id) {
+    ringingCountdowns.delete(id);
+    if (ringingCountdowns.size === 0) {
+        stopAlarmSoundLoop();
+    }
+}
+
+function playAlarmSoundLoop() {
+    if (activeAlarmInterval) return;
+    
+    playAlarmSound();
+    activeAlarmInterval = setInterval(() => {
+        playAlarmSound();
+    }, 3000);
+}
+
+function stopAlarmSoundLoop() {
+    if (activeAlarmInterval) {
+        clearInterval(activeAlarmInterval);
+        activeAlarmInterval = null;
+    }
+}
+
+function playAlarmSound() {
+    try {
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        
+        // Create a loud alarm sound
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.value = 880;
+        oscillator.type = 'square';
+        
+        gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.5);
+        
+        // Second beep
+        setTimeout(() => {
+            const osc2 = audioContext.createOscillator();
+            const gain2 = audioContext.createGain();
+            osc2.connect(gain2);
+            gain2.connect(audioContext.destination);
+            osc2.frequency.value = 1100;
+            osc2.type = 'square';
+            gain2.gain.setValueAtTime(0.5, audioContext.currentTime);
+            gain2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            osc2.start(audioContext.currentTime);
+            osc2.stop(audioContext.currentTime + 0.5);
+        }, 200);
+        
+    } catch (e) {
+        console.log('Audio not supported');
+    }
+}
+
+function renderCountdowns() {
+    const list = document.getElementById('countdownsList');
+    list.innerHTML = '';
+    
+    countdowns.forEach(cd => {
+        const h = Math.floor(cd.remaining / 3600);
+        const m = Math.floor((cd.remaining % 3600) / 60);
+        const s = cd.remaining % 60;
+        const isRinging = ringingCountdowns.has(cd.id);
+        const progress = cd.remaining / cd.totalSeconds;
+        
+        const item = document.createElement('div');
+        item.className = `countdown-item${isRinging ? ' ringing' : ''}`;
+        item.dataset.countdownId = cd.id;
+        
+        item.innerHTML = `
+            <div class="countdown-item-icon">⏱️</div>
+            <div class="countdown-item-info">
+                <div class="countdown-item-label">${escapeHtml(cd.label)}</div>
+                <div class="countdown-item-time">${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}</div>
+            </div>
+            <svg class="countdown-ring" viewBox="0 0 50 50" style="width:40px;height:40px;transform:rotate(-90deg);">
+                <circle class="countdown-ring-bg" cx="25" cy="25" r="20" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="4"/>
+                <circle class="countdown-ring-progress" cx="25" cy="25" r="20" fill="none" stroke="${isRinging ? 'var(--danger)' : 'var(--accent)'}" stroke-width="4" stroke-linecap="round" stroke-dasharray="${2 * Math.PI * 20}" stroke-dashoffset="${2 * Math.PI * 20 * (1 - progress)}"/>
+            </svg>
+            <div class="countdown-item-actions">
+                ${isRinging 
+                    ? `<button onclick="stopAlarm(${cd.id}); renderCountdowns();">🔇 გაჩუმება</button>`
+                    : `<button onclick="toggleCountdown(${cd.id})">${cd.isRunning ? '⏸' : '▶️'}</button>`
+                }
+                <button onclick="resetCountdownItem(${cd.id})">↺</button>
+                <button class="delete" onclick="deleteCountdown(${cd.id})">×</button>
+            </div>
+        `;
+        
+        list.appendChild(item);
+    });
+}
+
+// Expose functions to global scope for onclick handlers
+window.switchTimerMode = switchTimerMode;
+window.setPomodoroMode = setPomodoroMode;
+window.togglePomodoro = togglePomodoro;
+window.resetPomodoro = resetPomodoro;
+window.startCountdown = startCountdown;
+window.toggleCountdown = toggleCountdown;
+window.resetCountdownItem = resetCountdownItem;
+window.deleteCountdown = deleteCountdown;
+window.clearAllCountdowns = clearAllCountdowns;
+window.stopAlarm = stopAlarm;
 
 // ===== Notes Functions =====
 let saveTimeout = null;
@@ -368,7 +627,6 @@ function clearNotes() {
     showSaveIndicator();
 }
 
-// Notes event listeners
 notesTextarea.addEventListener('input', () => {
     updateCharCounter();
     debouncedSave();
@@ -377,15 +635,9 @@ notesTextarea.addEventListener('input', () => {
 copyNotesBtn.addEventListener('click', copyNotes);
 clearNotesBtn.addEventListener('click', clearNotes);
 
-// ===== Crypto Functions =====
-// CoinGecko API IDs
-const CRYPTO_IDS = {
-    sui: 'sui',
-    atom: 'cosmos',
-    vvv: 'vivi-protocol',
-    diem: 'diem'
-};
+loadNotes();
 
+// ===== Crypto Functions =====
 const cryptoConfig = {
     btc: { id: 'bitcoin', symbol: 'BTC', name: 'Bitcoin', gradient: 'linear-gradient(135deg, #f7931a 0%, #ffb74d 100%)' },
     eth: { id: 'ethereum', symbol: 'ETH', name: 'Ethereum', gradient: 'linear-gradient(135deg, #627eea 0%, #90a4ff 100%)' },
@@ -399,15 +651,13 @@ const cryptoConfig = {
 
 let cryptoRefreshInterval = null;
 let cryptoLastRequestTime = 0;
-const CRYPTO_COOLDOWN = 60000; // 1 minute between requests
+const CRYPTO_COOLDOWN = 60000;
 
 async function fetchCryptoPrices() {
     const now = Date.now();
     
-    // Rate limit protection
     if (now - cryptoLastRequestTime < CRYPTO_COOLDOWN) {
-        const remaining = Math.ceil((CRYPTO_COOLDOWN - (now - cryptoLastRequestTime)) / 1000);
-        return; // Skip request, too soon
+        return;
     }
     cryptoLastRequestTime = now;
     
@@ -501,11 +751,13 @@ function updateCryptoLastUpdate() {
 }
 
 function startCryptoRefresh() {
-    // Refresh every 60 seconds
     cryptoRefreshInterval = setInterval(fetchCryptoPrices, 60000);
 }
 
 refreshCryptoBtn.addEventListener('click', fetchCryptoPrices);
+
+fetchCryptoPrices();
+startCryptoRefresh();
 
 // ===== Utility Functions =====
 function escapeHtml(text) {
@@ -523,8 +775,8 @@ function init() {
     loadNotes();
     fetchCryptoPrices();
     startCryptoRefresh();
+    switchTimerMode('pomodoro');
     
-    // Request notification permission
     if ('Notification' in window && Notification.permission === 'default') {
         Notification.requestPermission();
     }

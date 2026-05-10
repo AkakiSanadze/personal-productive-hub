@@ -959,6 +959,135 @@ input {
     justify-content: center;
 }
 
+/* ===== Countdown Section ===== */
+.countdown-inputs {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+}
+
+.countdown-input-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.countdown-input-group input {
+    width: 70px;
+    padding: 0.6rem;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    color: var(--text-primary);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+.countdown-input-group input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 15px var(--accent-glow);
+}
+
+.countdown-input-group label {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+}
+
+.countdowns-list {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.countdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    animation: countdownSlideIn 0.3s ease-out;
+}
+
+@keyframes countdownSlideIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.countdown-item.ringing {
+    border-color: var(--danger);
+    animation: countdownPulse 0.5s ease-in-out infinite;
+}
+
+@keyframes countdownPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(225, 112, 85, 0.5); }
+    50% { box-shadow: 0 0 20px 5px rgba(225, 112, 85, 0.3); }
+}
+
+.countdown-item-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+}
+
+.countdown-item-info {
+    flex: 1;
+}
+
+.countdown-item-label {
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    margin-bottom: 0.2rem;
+}
+
+.countdown-item-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.3rem;
+    font-weight: 500;
+}
+
+.countdown-item.ringing .countdown-item-time {
+    color: var(--danger);
+}
+
+.countdown-item-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.countdown-item-actions button {
+    padding: 0.4rem 0.6rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+}
+
+.countdown-item-actions button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--text-primary);
+}
+
+.countdown-item-actions button.delete:hover {
+    background: rgba(225, 112, 85, 0.3);
+    color: var(--danger);
+}
+
 /* ===== Scrollbar Global ===== */
 ::-webkit-scrollbar {
     width: 8px;
