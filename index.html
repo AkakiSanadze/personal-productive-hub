@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Productive Hub</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+    
+    <header class="header">
+        <div class="clock" id="clock">00:00:00</div>
+        <div class="greeting" id="greeting">გაუშვი დღე <span>...</span></div>
+    </header>
+
+    
+    <main class="dashboard">
+        
+        <section class="glass-card">
+            <h2 class="widget-title">📋 დავალებები</h2>
+            <div class="todo-input-group">
+                <input type="text" class="todo-input" id="todoInput" placeholder="ახალი დავალება..." maxlength="100">
+                <button class="btn btn-primary">+</button>
+            </div>
+            <ul class="todo-list" id="todoList"></ul>
+        </section>
+
+        
+        <section class="glass-card">
+            <h2 class="widget-title">📝 სწრაფი ჩანაწერები</h2>
+            <div class="notes-container">
+                <textarea 
+                    class="notes-textarea" 
+                    id="notesTextarea" 
+                    placeholder="ჩაწერე შენი აზრები, იდეები, ჩანაწერები..."
+                    maxlength="2000"
+                ></textarea>
+                <div class="notes-footer">
+                    <div class="save-indicator" id="saveIndicator">
+                        <span class="save-dot"></span>
+                        <span class="save-text">შენახულია</span>
+                    </div>
+                    <div class="char-counter">
+                        <span id="charCount">0</span>/2000
+                    </div>
+                </div>
+            </div>
+            <div class="notes-actions">
+                <button class="btn" id="copyNotesBtn" title="კოპირება">
+                    📋 კოპირება
+                </button>
+                <button class="btn" id="clearNotesBtn" title="გასუფთავება" style="background: rgba(225, 112, 85, 0.2); color: var(--danger);">
+                    🗑️ გასუფთავება
+                </button>
+            </div>
+        </section>
+
+        <section class="glass-card">
+            <h2 class="widget-title">🔗 სწრაფი ბმულები</h2>
+            <div class="links-grid" id="linksGrid"></div>
+            <div class="add-link-form">
+                <input type="text" class="todo-input" id="linkName" placeholder="სახელი" maxlength="15">
+                <input type="url" class="todo-input" id="linkUrl" placeholder="https://...">
+                <button class="btn btn-primary">+</button>
+            </div>
+        </section>
+
+        
+        <section class="glass-card">
+            <h2 class="widget-title">💰 კრიპტო ფასები</h2>
+            <div class="crypto-header">
+                <span class="crypto-source">CoinGecko API</span>
+                <span class="last-update" id="cryptoLastUpdate">განახლება...</span>
+            </div>
+            <div class="crypto-list" id="cryptoList">
+                <div class="crypto-loading">
+                    <div class="loading-spinner"></div>
+                    <span>მონაცემების ჩატვირთვა...</span>
+                </div>
+            </div>
+            <div class="crypto-footer">
+                <button class="btn btn-primary" id="refreshCryptoBtn">
+                    🔄 განახლება
+                </button>
+            </div>
+        </section>
+
+        
+        <section class="glass-card">
+            <h2 class="widget-title">⏱️ ფოკუს-ტაიმერი</h2>
+            <div class="timer-modes">
+                <button class="mode-btn active">
+                    🍅 Pomodoro (25წთ)
+                </button>
+                <button class="mode-btn">
+                    ☕ Break (5წთ)
+                </button>
+                <button class="mode-btn">
+                    🎯 Deep Work (50წთ)
+                </button>
+            </div>
+            <div class="timer-wrapper">
+                <div class="timer-ring-container" id="timerRingContainer">
+                    <svg class="timer-ring" viewBox="0 0 220 220">
+                        <circle class="timer-ring-bg" cx="110" cy="110" r="100"/>
+                        <circle class="timer-ring-progress" id="timerRingProgress" cx="110" cy="110" r="100"/>
+                    </svg>
+                    <div class="timer-display" id="timer">25:00</div>
+                </div>
+            </div>
+            <div class="timer-controls">
+                <button class="btn btn-primary" id="startBtn">
+                    ▶️ დაწყება
+                </button>
+                <button class="btn" style="background: rgba(255,255,255,0.1); 
+                       color: white;">
+                    ↺ გადატვირთვა
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
