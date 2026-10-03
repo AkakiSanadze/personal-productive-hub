@@ -5,7 +5,7 @@ const greetingEl = document.getElementById('greeting')?.querySelector('span');
 // Todo
 const todoInput = document.getElementById('todoInput');
 const todoList = document.getElementById('todoList');
-const addTodoBtn = document.querySelector('.glass-card:first-of-type .btn-primary');
+const addTodoBtn = document.getElementById('addTodoBtn');
 
 // Links
 const linkName = document.getElementById('linkName');
@@ -139,7 +139,7 @@ function saveLinks() {
     localStorage.setItem('links', JSON.stringify(links));
 }
 
-function getRandomGradient() {
+function getRandomGradient(seed = '') {
     const gradients = [
         'linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%)',
         'linear-gradient(135deg, #00b894 0%, #55efc4 100%)',
@@ -149,7 +149,9 @@ function getRandomGradient() {
         'linear-gradient(135deg, #d63384 0%, #ff6bcb 100%)',
         'linear-gradient(135deg, #20c997 0%, #63e6be 100%)',
     ];
-    return gradients[Math.floor(Math.random() * gradients.length)];
+    let hash = 0;
+    for (const ch of seed) hash = (hash * 31 + ch.charCodeAt(0)) >>> 0;
+    return gradients[hash % gradients.length];
 }
 
 function renderLinks() {
@@ -159,7 +161,7 @@ function renderLinks() {
         div.className = 'link-item';
         div.innerHTML = `
             <div class="link-delete" data-index="${index}">×</div>
-            <div class="link-icon" style="background: ${getRandomGradient()}">🔗</div>
+            <div class="link-icon" style="background: ${getRandomGradient(link.url)}">🔗</div>
             <span class="link-name">${escapeHtml(link.name)}</span>
         `;
         div.addEventListener('click', (e) => {
@@ -204,6 +206,12 @@ linksGrid.addEventListener('click', (e) => {
 renderLinks();
 
 // ===== Pomodoro Timer Functions =====
+const timerDisplay = document.getElementById('timer');
+const timerRingProgress = document.getElementById('timerRingProgress');
+const timerRingContainer = document.getElementById('timerRingContainer');
+const startBtn = document.getElementById('startBtn');
+let timerEndTime = 0;
+
 function formatTime(seconds) {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -232,6 +240,23 @@ function updateTimerMode() {
     }
 }
 
+function tickPomodoro() {
+    timerSeconds = Math.max(0, Math.round((timerEndTime - Date.now()) / 1000));
+    updateTimerDisplay();
+
+    if (timerSeconds <= 0) {
+        clearInterval(timerInterval);
+        isRunning = false;
+        startBtn.textContent = '▶️ დაწყება';
+        if ('Notification' in window && Notification.permission === 'granted') {
+            new Notification('⏰ პომოდოროს ტაიმერი დასრულდა!');
+        }
+        playAlarmSound();
+        timerSeconds = modes[currentMode];
+        updateTimerDisplay();
+    }
+}
+
 function togglePomodoro() {
     if (isRunning) {
         clearInterval(timerInterval);
@@ -240,22 +265,8 @@ function togglePomodoro() {
     } else {
         isRunning = true;
         startBtn.textContent = '⏸️ შეჩერება';
-        timerInterval = setInterval(() => {
-            timerSeconds--;
-            updateTimerDisplay();
-            
-            if (timerSeconds <= 0) {
-                clearInterval(timerInterval);
-                isRunning = false;
-                startBtn.textContent = '▶️ დაწყება';
-                if (Notification.permission === 'granted') {
-                    new Notification('⏰ პომოდოროს ტაიმერი დასრულდა!');
-                }
-                playAlarmSound();
-                timerSeconds = modes[currentMode];
-                updateTimerDisplay();
-            }
-        }, 1000);
+        timerEndTime = Date.now() + timerSeconds * 1000;
+        timerInterval = setInterval(tickPomodoro, 250);
     }
 }
 
@@ -277,53 +288,11 @@ function setPomodoroMode(mode) {
     resetPomodoro();
 }
 
-startBtn.addEventListener('click', togglePomodoro);
-resetBtn.addEventListener('click', resetPomodoro);
-modeBtns.forEach(btn => {
-    const modeMap = { 0: 'pomodoro', 1: 'break', 2: 'deepwork' };
-    const idx = Array.from(modeBtns).indexOf(btn);
-    btn.addEventListener('click', () => selectMode(modeMap[idx]));
-});
-// Use the new setPomodoroMode for the inner buttons
-document.querySelectorAll('#pomodoroSection .mode-btn').forEach(btn => {
-    // Already handled in setPomodoroMode onclick
-});
-
-function selectMode(mode) {
-    modeBtns.forEach(btn => btn.classList.remove('active'));
-    const modeNames = { pomodoro: 0, break: 1, deepwork: 2 };
-    modeBtns[modeNames[mode]]?.classList.add('active');
-    currentMode = mode;
-    updateTimerMode();
-    resetPomodoro();
-}
-
 // Initialize pomodoro
 updateTimerDisplay();
 updateTimerMode();
 
 // ===== Countdown Timer Functions =====
-function switchTimerMode(mode) {
-    const pomodoroSection = document.getElementById('pomodoroSection');
-    const countdownSection = document.getElementById('countdownSection');
-    const tabs = document.querySelectorAll('.widget-title + .timer-modes .mode-btn');
-    
-    tabs.forEach(tab => {
-        if (tab.dataset.timerMode === mode) {
-            tab.classList.add('active');
-        } else {
-            tab.classList.remove('active');
-        }
-    });
-    
-    if (mode === 'pomodoro') {
-        pomodoroSection.style.display = 'block';
-        countdownSection.style.display = 'none';
-    } else {
-        pomodoroSection.style.display = 'none';
-        countdownSection.style.display = 'block';
-    }
-}
 
 function startCountdown() {
     const hours = parseInt(document.getElementById('countdownHours').value) || 0;
@@ -777,9 +746,6 @@ function startCryptoRefresh() {
 }
 
 refreshCryptoBtn.addEventListener('click', fetchCryptoPrices);
-
-fetchCryptoPrices();
-startCryptoRefresh();
 
 // ===== Utility Functions =====
 function escapeHtml(text) {
