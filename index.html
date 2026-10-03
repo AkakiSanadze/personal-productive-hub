@@ -23,6 +23,43 @@
         <button class="theme-btn lang-btn" id="langBtn" type="button" data-i18n-title="lang.switch">
           EN
         </button>
+        <div class="accent-switcher" role="group" data-i18n-title="accent.label">
+          <button
+            class="accent-dot"
+            type="button"
+            data-accent-choice="indigo"
+            aria-label="indigo"
+            title="indigo"
+          ></button>
+          <button
+            class="accent-dot"
+            type="button"
+            data-accent-choice="emerald"
+            aria-label="emerald"
+            title="emerald"
+          ></button>
+          <button
+            class="accent-dot"
+            type="button"
+            data-accent-choice="rose"
+            aria-label="rose"
+            title="rose"
+          ></button>
+          <button
+            class="accent-dot"
+            type="button"
+            data-accent-choice="amber"
+            aria-label="amber"
+            title="amber"
+          ></button>
+          <button
+            class="accent-dot"
+            type="button"
+            data-accent-choice="cyan"
+            aria-label="cyan"
+            title="cyan"
+          ></button>
+        </div>
         <div class="theme-switcher" role="group">
           <button
             class="theme-btn"
@@ -30,7 +67,18 @@
             data-theme-choice="dark"
             data-i18n-title="theme.dark"
           >
-            🌙
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.75"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+            </svg>
           </button>
           <button
             class="theme-btn"
@@ -38,7 +86,21 @@
             data-theme-choice="light"
             data-i18n-title="theme.light"
           >
-            ☀️
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.75"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="4" />
+              <path
+                d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"
+              />
+            </svg>
           </button>
           <button
             class="theme-btn"
@@ -46,7 +108,19 @@
             data-theme-choice="system"
             data-i18n-title="theme.system"
           >
-            💻
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.75"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect width="20" height="14" x="2" y="3" rx="2" />
+              <path d="M8 21h8M12 17v4" />
+            </svg>
           </button>
         </div>
       </div>
@@ -56,8 +130,26 @@
 
     <main class="dashboard">
       <!-- Tasks -->
-      <section class="glass-card" data-widget="todos" aria-labelledby="todos-title">
-        <h2 class="widget-title" id="todos-title">📋 <span data-i18n="todos.title"></span></h2>
+      <section class="glass-card bento-lg" data-widget="todos" aria-labelledby="todos-title">
+        <h2 class="widget-title" id="todos-title">
+          <svg
+            class="icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="m3 17 2 2 4-4" />
+            <path d="m3 7 2 2 4-4" />
+            <path d="M13 6h8" />
+            <path d="M13 12h8" />
+            <path d="M13 18h8" />
+          </svg>
+          <span data-i18n="todos.title"></span>
+        </h2>
         <form class="todo-input-group" id="todoForm">
           <input
             type="text"
@@ -76,7 +168,25 @@
 
       <!-- Notes -->
       <section class="glass-card" data-widget="notes" aria-labelledby="notes-title">
-        <h2 class="widget-title" id="notes-title">📝 <span data-i18n="notes.title"></span></h2>
+        <h2 class="widget-title" id="notes-title">
+          <svg
+            class="icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
+            <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+            <path d="M10 9H8" />
+            <path d="M16 13H8" />
+            <path d="M16 17H8" />
+          </svg>
+          <span data-i18n="notes.title"></span>
+        </h2>
         <div class="notes-container">
           <textarea
             class="notes-textarea"
@@ -105,7 +215,22 @@
 
       <!-- Links -->
       <section class="glass-card" data-widget="links" aria-labelledby="links-title">
-        <h2 class="widget-title" id="links-title">🔗 <span data-i18n="links.title"></span></h2>
+        <h2 class="widget-title" id="links-title">
+          <svg
+            class="icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+          </svg>
+          <span data-i18n="links.title"></span>
+        </h2>
         <div class="links-grid" id="linksGrid"></div>
         <form class="add-link-form" id="linkForm">
           <input
@@ -130,7 +255,22 @@
 
       <!-- Crypto -->
       <section class="glass-card" data-widget="crypto" aria-labelledby="crypto-title">
-        <h2 class="widget-title" id="crypto-title">💰 <span data-i18n="crypto.title"></span></h2>
+        <h2 class="widget-title" id="crypto-title">
+          <svg
+            class="icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+            <polyline points="16 7 22 7 22 13" />
+          </svg>
+          <span data-i18n="crypto.title"></span>
+        </h2>
         <div class="crypto-header">
           <a
             class="crypto-source"
@@ -153,9 +293,23 @@
       </section>
 
       <!-- Pomodoro -->
-      <section class="glass-card" data-widget="pomodoro" aria-labelledby="pomodoro-title">
+      <section class="glass-card bento-lg" data-widget="pomodoro" aria-labelledby="pomodoro-title">
         <h2 class="widget-title" id="pomodoro-title">
-          ⏱️ <span data-i18n="pomodoro.title"></span>
+          <svg
+            class="icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <line x1="10" x2="14" y1="2" y2="2" />
+            <line x1="12" x2="15" y1="14" y2="11" />
+            <circle cx="12" cy="14" r="8" />
+          </svg>
+          <span data-i18n="pomodoro.title"></span>
         </h2>
         <div class="timer-modes" role="group">
           <button
@@ -201,7 +355,22 @@
       <!-- Countdowns -->
       <section class="glass-card" data-widget="countdowns" aria-labelledby="countdown-title">
         <h2 class="widget-title" id="countdown-title">
-          ⏳ <span data-i18n="countdown.title"></span>
+          <svg
+            class="icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M5 22h14" />
+            <path d="M5 2h14" />
+            <path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22" />
+            <path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" />
+          </svg>
+          <span data-i18n="countdown.title"></span>
         </h2>
         <form class="countdown-form" id="countdownForm">
           <input

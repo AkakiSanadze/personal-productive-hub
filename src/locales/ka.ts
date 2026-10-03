@@ -9,6 +9,7 @@ const ka = {
   'theme.light': 'ღია თემა',
   'theme.system': 'სისტემური თემა',
   'lang.switch': 'Switch to English',
+  'accent.label': 'აქცენტის ფერი',
 
   'todos.title': 'დავალებები',
   'todos.placeholder': 'ახალი დავალება...',

@@ -10,6 +10,7 @@ const en: Record<MessageKey, string> = {
   'theme.light': 'Light theme',
   'theme.system': 'System theme',
   'lang.switch': 'ქართულად გადართვა',
+  'accent.label': 'Accent color',
 
   'todos.title': 'Tasks',
   'todos.placeholder': 'New task...',

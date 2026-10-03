@@ -2,6 +2,8 @@
 
 export type Lang = 'ka' | 'en';
 export type ThemeChoice = 'dark' | 'light' | 'system';
+export type AccentChoice = 'indigo' | 'emerald' | 'rose' | 'amber' | 'cyan';
+export const ACCENTS: AccentChoice[] = ['indigo', 'emerald', 'rose', 'amber', 'cyan'];
 export type PomodoroMode = 'pomodoro' | 'break' | 'deepwork';
 
 export interface Todo {
@@ -20,6 +22,7 @@ export interface Link {
 export interface Settings {
   lang: Lang;
   theme: ThemeChoice;
+  accent: AccentChoice;
   /** CoinGecko coin ids to show, in order. */
   coins: string[];
   currency: 'usd' | 'eur';
@@ -69,7 +72,13 @@ export function defaultLang(): Lang {
 }
 
 export function defaultSettings(): Settings {
-  return { lang: defaultLang(), theme: 'system', coins: [...DEFAULT_COINS], currency: 'usd' };
+  return {
+    lang: defaultLang(),
+    theme: 'system',
+    accent: 'indigo',
+    coins: [...DEFAULT_COINS],
+    currency: 'usd',
+  };
 }
 
 export function uid(): string {

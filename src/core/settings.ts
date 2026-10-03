@@ -1,5 +1,5 @@
 import type { Store } from './storage';
-import type { ThemeChoice } from './types';
+import type { AccentChoice, ThemeChoice } from './types';
 import { KEYS, defaultSettings, type Settings } from './types';
 
 export function getSettings(store: Store): Settings {
@@ -18,5 +18,12 @@ export function applyTheme(theme: ThemeChoice): void {
   else root.setAttribute('data-theme', theme);
   document.querySelectorAll<HTMLButtonElement>('[data-theme-choice]').forEach((btn) => {
     btn.setAttribute('aria-pressed', String(btn.dataset.themeChoice === theme));
+  });
+}
+
+export function applyAccent(accent: AccentChoice): void {
+  document.documentElement.setAttribute('data-accent', accent);
+  document.querySelectorAll<HTMLButtonElement>('[data-accent-choice]').forEach((btn) => {
+    btn.setAttribute('aria-pressed', String(btn.dataset.accentChoice === accent));
   });
 }
