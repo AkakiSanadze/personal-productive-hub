@@ -1,159 +1,235 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ka">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Free, open-source, privacy-first productivity dashboard: tasks, notes, links, Pomodoro, countdowns and crypto prices."
+    />
+    <meta name="color-scheme" content="dark light" />
     <title>Personal Productive Hub</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <!-- Animated Background -->
-    <div class="bg-orbs">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="orb orb-3"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </head>
+  <body>
+    <div class="bg-orbs" aria-hidden="true">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
     </div>
-    
+
     <header class="header">
-        <div class="clock" id="clock">00:00:00</div>
-        <div class="greeting" id="greeting">გაუშვი დღე <span>...</span></div>
-        <div class="theme-switcher">
-            <button class="theme-btn" onclick="setTheme('dark')" title="მუქი">🌙</button>
-            <button class="theme-btn" onclick="setTheme('light')" title="ღია">☀️</button>
-            <button class="theme-btn" onclick="setTheme('system')" title="სისტემა">💻</button>
+      <div class="toolbar">
+        <button class="theme-btn lang-btn" id="langBtn" type="button" data-i18n-title="lang.switch">
+          EN
+        </button>
+        <div class="theme-switcher" role="group">
+          <button
+            class="theme-btn"
+            type="button"
+            data-theme-choice="dark"
+            data-i18n-title="theme.dark"
+          >
+            🌙
+          </button>
+          <button
+            class="theme-btn"
+            type="button"
+            data-theme-choice="light"
+            data-i18n-title="theme.light"
+          >
+            ☀️
+          </button>
+          <button
+            class="theme-btn"
+            type="button"
+            data-theme-choice="system"
+            data-i18n-title="theme.system"
+          >
+            💻
+          </button>
         </div>
+      </div>
+      <time class="clock" id="clock">00:00:00</time>
+      <div class="greeting"><span id="greeting"></span></div>
     </header>
 
-    
     <main class="dashboard">
-        
-        <section class="glass-card">
-            <h2 class="widget-title">📋 დავალებები</h2>
-            <div class="todo-input-group">
-                <input type="text" class="todo-input" id="todoInput" placeholder="ახალი დავალება..." maxlength="100">
-                <button class="btn btn-primary" id="addTodoBtn">+</button>
-            </div>
-            <ul class="todo-list" id="todoList"></ul>
-        </section>
+      <!-- Tasks -->
+      <section class="glass-card" data-widget="todos" aria-labelledby="todos-title">
+        <h2 class="widget-title" id="todos-title">📋 <span data-i18n="todos.title"></span></h2>
+        <form class="todo-input-group" id="todoForm">
+          <input
+            type="text"
+            class="todo-input"
+            id="todoInput"
+            data-i18n-placeholder="todos.placeholder"
+            maxlength="200"
+            autocomplete="off"
+          />
+          <button class="btn btn-primary" id="addTodoBtn" type="submit" data-i18n-title="todos.add">
+            +
+          </button>
+        </form>
+        <ul class="todo-list" id="todoList"></ul>
+      </section>
 
-        
-        <section class="glass-card">
-            <h2 class="widget-title">📝 სწრაფი ჩანაწერები</h2>
-            <div class="notes-container">
-                <textarea 
-                    class="notes-textarea" 
-                    id="notesTextarea" 
-                    placeholder="ჩაწერე შენი აზრები, იდეები, ჩანაწერები..."
-                    maxlength="2000"
-                ></textarea>
-                <div class="notes-footer">
-                    <div class="save-indicator" id="saveIndicator">
-                        <span class="save-dot"></span>
-                        <span class="save-text">შენახულია</span>
-                    </div>
-                    <div class="char-counter">
-                        <span id="charCount">0</span>/2000
-                    </div>
-                </div>
+      <!-- Notes -->
+      <section class="glass-card" data-widget="notes" aria-labelledby="notes-title">
+        <h2 class="widget-title" id="notes-title">📝 <span data-i18n="notes.title"></span></h2>
+        <div class="notes-container">
+          <textarea
+            class="notes-textarea"
+            id="notesTextarea"
+            data-i18n-placeholder="notes.placeholder"
+            maxlength="2000"
+          ></textarea>
+          <div class="notes-footer">
+            <div class="save-indicator" id="saveIndicator" aria-live="polite">
+              <span class="save-dot"></span>
+              <span class="save-text"></span>
             </div>
-            <div class="notes-actions">
-                <button class="btn" id="copyNotesBtn" title="კოპირება">
-                    📋 კოპირება
-                </button>
-                <button class="btn" id="clearNotesBtn" title="გასუფთავება" style="background: rgba(225, 112, 85, 0.2); color: var(--danger);">
-                    🗑️ გასუფთავება
-                </button>
-            </div>
-        </section>
+            <div class="char-counter"><span id="charCount">0</span>/2000</div>
+          </div>
+        </div>
+        <div class="notes-actions">
+          <button class="btn" id="copyNotesBtn" type="button" data-i18n="notes.copy"></button>
+          <button
+            class="btn btn-danger"
+            id="clearNotesBtn"
+            type="button"
+            data-i18n="notes.clear"
+          ></button>
+        </div>
+      </section>
 
-        <section class="glass-card">
-            <h2 class="widget-title">🔗 სწრაფი ბმულები</h2>
-            <div class="links-grid" id="linksGrid"></div>
-            <div class="add-link-form">
-                <input type="text" class="todo-input" id="linkName" placeholder="სახელი" maxlength="30">
-                <input type="url" class="todo-input" id="linkUrl" placeholder="https://...">
-                <button class="btn btn-primary">+</button>
-            </div>
-        </section>
+      <!-- Links -->
+      <section class="glass-card" data-widget="links" aria-labelledby="links-title">
+        <h2 class="widget-title" id="links-title">🔗 <span data-i18n="links.title"></span></h2>
+        <div class="links-grid" id="linksGrid"></div>
+        <form class="add-link-form" id="linkForm">
+          <input
+            type="text"
+            class="todo-input"
+            id="linkName"
+            data-i18n-placeholder="links.name"
+            maxlength="30"
+            autocomplete="off"
+          />
+          <input
+            type="text"
+            inputmode="url"
+            class="todo-input"
+            id="linkUrl"
+            placeholder="https://..."
+            autocomplete="off"
+          />
+          <button class="btn btn-primary" type="submit" data-i18n-title="links.add">+</button>
+        </form>
+      </section>
 
-        
-        <section class="glass-card">
-            <h2 class="widget-title">💰 კრიპტო ფასები</h2>
-            <div class="crypto-header">
-                <span class="crypto-source">CoinGecko API</span>
-                <span class="last-update" id="cryptoLastUpdate">განახლება...</span>
-            </div>
-            <div class="crypto-list" id="cryptoList">
-                <div class="crypto-loading">
-                    <div class="loading-spinner"></div>
-                    <span>მონაცემების ჩატვირთვა...</span>
-                </div>
-            </div>
-            <div class="crypto-footer">
-                <button class="btn btn-primary" id="refreshCryptoBtn">
-                    🔄 განახლება
-                </button>
-            </div>
-        </section>
+      <!-- Crypto -->
+      <section class="glass-card" data-widget="crypto" aria-labelledby="crypto-title">
+        <h2 class="widget-title" id="crypto-title">💰 <span data-i18n="crypto.title"></span></h2>
+        <div class="crypto-header">
+          <a
+            class="crypto-source"
+            href="https://www.coingecko.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            >CoinGecko</a
+          >
+          <span class="last-update" id="cryptoLastUpdate"></span>
+        </div>
+        <div class="crypto-list" id="cryptoList" aria-live="polite"></div>
+        <div class="crypto-footer">
+          <button
+            class="btn btn-primary"
+            id="refreshCryptoBtn"
+            type="button"
+            data-i18n="crypto.refresh"
+          ></button>
+        </div>
+      </section>
 
-        
-        <section class="glass-card">
-            <h2 class="widget-title">⏱️ ტაიმერი</h2>
-            <div class="timer-modes" style="margin-bottom: 1rem;">
-                <button class="mode-btn active" onclick="setPomodoroMode('pomodoro')">
-                    🍅 Pomodoro (25წთ)
-                </button>
-                <button class="mode-btn" onclick="setPomodoroMode('break')">
-                    ☕ Break (5წთ)
-                </button>
-                <button class="mode-btn" onclick="setPomodoroMode('deepwork')">
-                    🎯 Deep Work (50წთ)
-                </button>
-            </div>
-            <div class="timer-wrapper">
-                <div class="timer-ring-container" id="timerRingContainer">
-                    <svg class="timer-ring" viewBox="0 0 220 220">
-                        <circle class="timer-ring-bg" cx="110" cy="110" r="100"/>
-                        <circle class="timer-ring-progress" id="timerRingProgress" cx="110" cy="110" r="100"/>
-                    </svg>
-                    <div class="timer-display" id="timer">25:00</div>
-                </div>
-            </div>
-            <div class="timer-controls">
-                <button class="btn btn-primary" id="startBtn" onclick="togglePomodoro()">
-                    ▶️ დაწყება
-                </button>
-                <button class="btn" onclick="resetPomodoro()">
-                    ↺ გადატვირთვა
-                </button>
-            </div>
-        </section>
+      <!-- Pomodoro -->
+      <section class="glass-card" data-widget="pomodoro" aria-labelledby="pomodoro-title">
+        <h2 class="widget-title" id="pomodoro-title">
+          ⏱️ <span data-i18n="pomodoro.title"></span>
+        </h2>
+        <div class="timer-modes" role="group">
+          <button
+            class="mode-btn"
+            type="button"
+            data-mode="pomodoro"
+            data-i18n="pomodoro.mode.pomodoro"
+          ></button>
+          <button
+            class="mode-btn"
+            type="button"
+            data-mode="break"
+            data-i18n="pomodoro.mode.break"
+          ></button>
+          <button
+            class="mode-btn"
+            type="button"
+            data-mode="deepwork"
+            data-i18n="pomodoro.mode.deepwork"
+          ></button>
+        </div>
+        <div class="timer-wrapper">
+          <div class="timer-ring-container" id="timerRingContainer">
+            <svg class="timer-ring" viewBox="0 0 220 220" aria-hidden="true">
+              <circle class="timer-ring-bg" cx="110" cy="110" r="100" />
+              <circle
+                class="timer-ring-progress"
+                id="timerRingProgress"
+                cx="110"
+                cy="110"
+                r="100"
+              />
+            </svg>
+            <div class="timer-display" id="timer" role="timer">25:00</div>
+          </div>
+        </div>
+        <div class="timer-controls">
+          <button class="btn btn-primary" id="startBtn" type="button"></button>
+          <button class="btn" id="resetBtn" type="button" data-i18n="pomodoro.reset"></button>
+        </div>
+      </section>
 
-        <!-- Countdown Timer - Separate Widget -->
-        <section class="glass-card">
-            <h2 class="widget-title">⏳ Countdown</h2>
-            <div class="countdown-inputs">
-                <div class="countdown-input-group">
-                    <input type="number" id="countdownHours" min="0" max="99" value="0" placeholder="სთ">
-                    <label>სთ</label>
-                </div>
-                <div class="countdown-input-group">
-                    <input type="number" id="countdownMinutes" min="0" max="59" value="0" placeholder="წთ">
-                    <label>წთ</label>
-                </div>
-                <div class="countdown-input-group">
-                    <input type="number" id="countdownSeconds" min="0" max="59" value="0" placeholder="წმ">
-                    <label>წმ</label>
-                </div>
-                <button class="btn btn-primary" onclick="startCountdown()">
-                    ▶️ დაწყება
-                </button>
-            </div>
-            <div class="countdowns-list" id="countdownsList"></div>
-        </section>
+      <!-- Countdowns -->
+      <section class="glass-card" data-widget="countdowns" aria-labelledby="countdown-title">
+        <h2 class="widget-title" id="countdown-title">
+          ⏳ <span data-i18n="countdown.title"></span>
+        </h2>
+        <form class="countdown-form" id="countdownForm">
+          <input
+            type="text"
+            class="todo-input countdown-label-input"
+            id="countdownLabel"
+            data-i18n-placeholder="countdown.labelPlaceholder"
+            maxlength="40"
+            autocomplete="off"
+          />
+          <div class="countdown-inputs">
+            <label class="countdown-input-group">
+              <input type="number" id="countdownHours" min="0" max="99" placeholder="0" />
+              <span data-i18n="countdown.h"></span>
+            </label>
+            <label class="countdown-input-group">
+              <input type="number" id="countdownMinutes" min="0" max="59" placeholder="0" />
+              <span data-i18n="countdown.m"></span>
+            </label>
+            <label class="countdown-input-group">
+              <input type="number" id="countdownSeconds" min="0" max="59" placeholder="0" />
+              <span data-i18n="countdown.s"></span>
+            </label>
+            <button class="btn btn-primary" type="submit" data-i18n="countdown.start"></button>
+          </div>
+        </form>
+        <div class="countdowns-list" id="countdownsList"></div>
+      </section>
     </main>
-
-    <script src="script.js"></script>
-</body>
+  </body>
 </html>
-<!-- redeploy trigger -->
