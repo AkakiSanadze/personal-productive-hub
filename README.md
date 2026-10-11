@@ -2,6 +2,8 @@
 
 **A free, open-source, privacy-first productivity dashboard** — tasks, notes, quick links, Pomodoro, countdowns and live crypto prices on one beautiful screen.
 
+🌐 **Live Demo**: [https://pph-bice.vercel.app](https://pph-bice.vercel.app)
+
 > 🇬🇪 ქართული და 🇬🇧 English · No accounts · No tracking · Your data never leaves your browser
 
 ## Features
